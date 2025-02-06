@@ -10,8 +10,8 @@ ARG goproxy="https://proxy.golang.org,direct"
 COPY . /rod
 WORKDIR /rod
 RUN go env -w GOPROXY=$goproxy
-RUN go build ./manager
-RUN go run ./browser
+RUN go build ./manager/main.go -o /rod/rod-manager
+RUN go run ./browser/main.go
 
 FROM ubuntu:noble
 
