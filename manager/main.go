@@ -4,6 +4,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"net"
 	"net/http"
@@ -18,8 +19,24 @@ var (
 	addr         = flag.String("address", ":7317", "the address to listen to")
 	quiet        = flag.Bool("quiet", false, "silence the log")
 	proxy        = flag.String("proxy", "", "the address of proxy server")
+	proxyGen     = flag.String("proxyGen", "", "the address of proxy generator")
 	allowAllPath = flag.Bool("allow-all", false, "allow all path set by the client")
 )
+
+func fetchProxy(url string) (string, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", fmt.Errorf("failed to fetch proxy: %v", err)
+	}
+	defer func() { _ = resp.Body.Close() }()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return "", fmt.Errorf("failed to read response: %v", err)
+	}
+
+	return string(body), nil
+}
 
 func main() {
 	flag.Parse()
@@ -34,6 +51,14 @@ func main() {
 		m.BeforeLaunch = func(l *launcher.Launcher, _ http.ResponseWriter, _ *http.Request) {
 			if *proxy != "" {
 				l.Set(flags.ProxyServer, *proxy)
+			}
+
+			if *proxyGen != "" {
+				proxyAddr, err := fetchProxy(*proxyGen)
+				if err != nil {
+					return
+				}
+				l.Set(flags.ProxyServer, proxyAddr)
 			}
 		}
 	}
