@@ -21,7 +21,7 @@ var (
 	proxy             = flag.String("proxy", "", "the address of proxy server")
 	proxyGen          = flag.String("proxyGen", "", "the address of proxy generator")
 	allowAllPath      = flag.Bool("allow-all", false, "allow all path set by the client")
-	optimizeDataUsage = flag.Bool("optimizeDataUsage", true, "allow to optimize data usage")
+	optimizeDataUsage = flag.Bool("optimize-data-usage", true, "allow to optimize data usage")
 )
 
 func fetchProxy(url string) (string, error) {
