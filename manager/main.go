@@ -16,11 +16,12 @@ import (
 )
 
 var (
-	addr         = flag.String("address", ":7317", "the address to listen to")
-	quiet        = flag.Bool("quiet", false, "silence the log")
-	proxy        = flag.String("proxy", "", "the address of proxy server")
-	proxyGen     = flag.String("proxyGen", "", "the address of proxy generator")
-	allowAllPath = flag.Bool("allow-all", false, "allow all path set by the client")
+	addr              = flag.String("address", ":7317", "the address to listen to")
+	quiet             = flag.Bool("quiet", false, "silence the log")
+	proxy             = flag.String("proxy", "", "the address of proxy server")
+	proxyGen          = flag.String("proxyGen", "", "the address of proxy generator")
+	allowAllPath      = flag.Bool("allow-all", false, "allow all path set by the client")
+	optimizeDataUsage = flag.Bool("optimizeDataUsage", true, "allow to optimize data usage")
 )
 
 func fetchProxy(url string) (string, error) {
@@ -49,6 +50,10 @@ func main() {
 
 	if *allowAllPath {
 		m.BeforeLaunch = func(l *launcher.Launcher, _ http.ResponseWriter, _ *http.Request) {
+			if *optimizeDataUsage {
+				l.Set("disable-features", "OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints")
+			}
+
 			if *proxy != "" {
 				l.Set(flags.ProxyServer, *proxy)
 			}
