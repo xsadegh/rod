@@ -50,6 +50,13 @@ func main() {
 
 	if *allowAllPath {
 		m.BeforeLaunch = func(l *launcher.Launcher, _ http.ResponseWriter, _ *http.Request) {
+			l.Delete("disable-client-side-phishing-detection")
+			l.Delete("disable-popup-blocking")
+			l.Delete("disable-default-apps")
+			l.Delete("enable-automation")
+			l.Delete(flags.Headless)
+			l.Set(flags.Leakless)
+
 			if *optimizeDataUsage {
 				l.Set("disable-features", "OptimizationGuideModelDownloading,OptimizationHintsFetching,OptimizationTargetPrediction,OptimizationHints")
 			}
